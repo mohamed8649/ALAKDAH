@@ -1,5 +1,5 @@
 /* ==========================================================================
-   الساعة الكلاسيكية السوداء — سكربت الصفحة
+   كلاسيك نوار — سكربت الصفحة
    ========================================================================== */
 (function () {
   'use strict';
@@ -8,13 +8,13 @@
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
 
   /* ---------- الأرقام العربية ---------- */
-  var AR_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  var AR = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 
   function toAr(n) {
-    return String(n).replace(/\d/g, function (d) { return AR_DIGITS[+d]; });
+    return String(n).replace(/\d/g, function (d) { return AR[+d]; });
   }
-  function toEn(str) {
-    return String(str)
+  function toEn(s) {
+    return String(s)
       .replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x0660; })
       .replace(/[۰-۹]/g, function (d) { return d.charCodeAt(0) - 0x06F0; });
   }
@@ -25,42 +25,41 @@
     set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { /* تجاهل */ } }
   };
 
-  /* ---------- الإشعارات ---------- */
-  var toastEl = $('#toast');
-  var toastTimer;
-  function toast(msg) {
-    if (!toastEl) return;
-    toastEl.textContent = msg;
-    toastEl.classList.add('is-visible');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { toastEl.classList.remove('is-visible'); }, 3200);
+  /* ---------- إشعار ---------- */
+  var noteEl = $('#toast');
+  var noteTimer;
+  function note(msg) {
+    if (!noteEl) return;
+    noteEl.textContent = msg;
+    noteEl.classList.add('is-up');
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(function () { noteEl.classList.remove('is-up'); }, 3000);
   }
 
-  /* ---------- العداد التنازلي ---------- */
+  /* ---------- العدّاد ---------- */
   (function countdown() {
-    var hEl = $('#cdH'), mEl = $('#cdM'), sEl = $('#cdS');
-    if (!hEl) return;
+    var h = $('#cdH'), m = $('#cdM'), s = $('#cdS');
+    if (!h) return;
 
-    var WINDOW_MS = 6 * 60 * 60 * 1000; // ٦ ساعات لكل زائر
-    var deadline = parseInt(store.get('offerDeadline'), 10);
+    var SPAN = 6 * 60 * 60 * 1000; // نافذة ٦ ساعات لكل زائر
+    var end = parseInt(store.get('offerEnd'), 10);
 
-    if (!deadline || isNaN(deadline) || deadline < Date.now()) {
-      deadline = Date.now() + WINDOW_MS;
-      store.set('offerDeadline', String(deadline));
+    if (!end || isNaN(end) || end < Date.now()) {
+      end = Date.now() + SPAN;
+      store.set('offerEnd', String(end));
     }
 
     function pad(n) { return toAr(n < 10 ? '0' + n : n); }
 
     function tick() {
-      var left = Math.max(0, deadline - Date.now());
-      var total = Math.floor(left / 1000);
-      hEl.textContent = pad(Math.floor(total / 3600));
-      mEl.textContent = pad(Math.floor(total % 3600 / 60));
-      sEl.textContent = pad(total % 60);
+      var left = Math.max(0, end - Date.now());
+      var t = Math.floor(left / 1000);
+      h.textContent = pad(Math.floor(t / 3600));
+      m.textContent = pad(Math.floor(t % 3600 / 60));
+      s.textContent = pad(t % 60);
       if (left <= 0) {
-        // إعادة تشغيل النافذة حتى يبقى العرض متاحاً
-        deadline = Date.now() + WINDOW_MS;
-        store.set('offerDeadline', String(deadline));
+        end = Date.now() + SPAN;
+        store.set('offerEnd', String(end));
       }
     }
 
@@ -68,145 +67,134 @@
     setInterval(tick, 1000);
   })();
 
-  /* ---------- المشاهدون والمخزون ---------- */
-  (function liveSignals() {
-    var viewers = $('#liveViewers');
-    var stockEl = $('#stockLeft');
-    var bar = $('.stock__bar i');
-    var count = 14;
-    var stock = 7;
+  /* ---------- الدفعة المتبقية ---------- */
+  (function batch() {
+    var el = $('#stockLeft');
+    var fill = $('#meterFill');
+    if (!el || !fill) return;
 
-    if (viewers) {
-      setInterval(function () {
-        count += Math.floor(Math.random() * 5) - 2;
-        count = Math.min(38, Math.max(9, count));
-        viewers.textContent = toAr(count);
-      }, 5000);
-    }
-
-    if (stockEl && bar) {
-      setInterval(function () {
-        if (stock > 3 && Math.random() > 0.65) {
-          stock--;
-          stockEl.textContent = toAr(stock);
-          bar.style.width = Math.round(stock / 30 * 100) + '%';
-        }
-      }, 22000);
-    }
+    var left = 7;
+    setInterval(function () {
+      if (left > 3 && Math.random() > 0.6) {
+        left--;
+        el.textContent = toAr(left);
+        fill.style.width = Math.round(left / 30 * 100) + '%';
+      }
+    }, 25000);
   })();
 
-  /* ---------- الأسعار والعروض ---------- */
+  /* ---------- الأسعار ---------- */
   var PRICES = { 1: 199, 2: 349, 3: 479 };
 
-  var qtySelect = $('#qty');
-  var sumQty    = $('#sumQty');
-  var sumPrice  = $('#sumPrice');
-  var sumTotal  = $('#sumTotal');
+  var qty      = $('#qty');
+  var sumQty   = $('#sumQty');
+  var sumPrice = $('#sumPrice');
+  var sumTotal = $('#sumTotal');
 
-  function currentQty() {
-    var q = qtySelect ? parseInt(qtySelect.value, 10) : 2;
+  function chosen() {
+    var q = qty ? parseInt(qty.value, 10) : 2;
     return PRICES[q] ? q : 2;
   }
 
-  function syncSummary() {
-    var q = currentQty();
+  function sync() {
+    var q = chosen();
     var price = PRICES[q];
+
     if (sumQty)   sumQty.textContent   = toAr(q);
     if (sumPrice) sumPrice.textContent = toAr(price);
     if (sumTotal) sumTotal.textContent = toAr(price);
-    // يُعاد استعلامه في كل مرة لأن زر الإرسال يُعاد بناؤه بعد الإرسال
-    var btnTotal = $('#btnTotal');
-    if (btnTotal) btnTotal.textContent = toAr(price);
 
-    $$('.offer').forEach(function (o) {
-      o.classList.toggle('is-active', parseInt(o.dataset.qty, 10) === q);
+    // يُستعلم في كل مرة لأن زر الإرسال يُعاد بناؤه بعد الإرسال
+    var bt = $('#btnTotal');
+    if (bt) bt.textContent = toAr(price);
+
+    $$('.ladder__row').forEach(function (row) {
+      row.classList.toggle('is-on', parseInt(row.dataset.qty, 10) === q);
     });
   }
 
-  if (qtySelect) qtySelect.addEventListener('change', syncSummary);
+  if (qty) qty.addEventListener('change', sync);
 
-  $$('.offer').forEach(function (offer) {
-    offer.addEventListener('click', function () {
-      var q = offer.dataset.qty;
-      if (qtySelect) qtySelect.value = q;
-      syncSummary();
-      toast('تم اختيار العرض ✓ أكمل بياناتك بالأسفل');
+  $$('.ladder__row').forEach(function (row) {
+    row.addEventListener('click', function () {
+      if (qty) qty.value = row.dataset.qty;
+      sync();
+      note('تم اختيار ' + row.querySelector('b').textContent + ' — أكمل بياناتك');
       var target = $('#order');
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
 
-  syncSummary();
+  sync();
 
-  /* ---------- التحقق من النموذج ---------- */
+  /* ---------- النموذج ---------- */
   var form = $('#orderForm');
 
   var RULES = {
     name: function (v) {
-      if (!v) return 'الرجاء كتابة الاسم';
+      if (!v) return 'اكتب اسمك من فضلك';
       if (v.length < 3) return 'الاسم قصير جداً';
       return '';
     },
     phone: function (v) {
-      var digits = toEn(v).replace(/[\s\-()]/g, '');
-      if (!digits) return 'الرجاء كتابة رقم الجوال';
-      if (!/^(?:\+?9665|05|5)\d{8}$/.test(digits)) return 'رقم الجوال غير صحيح (مثال: 0512345678)';
+      var d = toEn(v).replace(/[\s\-()]/g, '');
+      if (!d) return 'اكتب رقم جوالك';
+      if (!/^(?:\+?9665|05|5)\d{8}$/.test(d)) return 'رقم غير صحيح — مثال: 0512345678';
       return '';
     },
-    city: function (v) { return v ? '' : 'الرجاء اختيار المدينة'; },
+    city: function (v) { return v ? '' : 'اختر مدينتك'; },
     address: function (v) {
-      if (!v) return 'الرجاء كتابة العنوان';
-      if (v.length < 10) return 'أضف تفاصيل أكثر للعنوان';
+      if (!v) return 'اكتب عنوانك';
+      if (v.length < 10) return 'أضف تفاصيل أكثر ليصلك الطلب';
       return '';
     }
   };
 
-  function setError(name, msg) {
+  function mark(name, msg) {
     var input = form.elements[name];
-    var box = input.closest('.field');
+    var box = input.closest('.f');
     var err = $('.err[data-err="' + name + '"]', form);
-    if (box) box.classList.toggle('has-error', !!msg);
+    if (box) box.classList.toggle('bad', !!msg);
     if (err) err.textContent = msg;
     return !msg;
   }
 
-  function validateField(name) {
-    var input = form.elements[name];
-    return setError(name, RULES[name](input.value.trim()));
+  function check(name) {
+    return mark(name, RULES[name](form.elements[name].value.trim()));
   }
 
   if (form) {
     Object.keys(RULES).forEach(function (name) {
       var input = form.elements[name];
       if (!input) return;
-      input.addEventListener('blur', function () { validateField(name); });
+      input.addEventListener('blur', function () { check(name); });
       input.addEventListener('input', function () {
-        var box = input.closest('.field');
-        if (box && box.classList.contains('has-error')) validateField(name);
+        var box = input.closest('.f');
+        if (box && box.classList.contains('bad')) check(name);
       });
     });
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
-      var firstInvalid = null;
+      var first = null;
       Object.keys(RULES).forEach(function (name) {
-        if (!validateField(name) && !firstInvalid) firstInvalid = form.elements[name];
+        if (!check(name) && !first) first = form.elements[name];
       });
 
-      if (firstInvalid) {
-        firstInvalid.focus();
-        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        toast('الرجاء تصحيح الحقول المطلوبة');
+      if (first) {
+        first.focus();
+        first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        note('راجع الحقول المطلوبة');
         return;
       }
 
       var btn = $('#submitBtn');
-      var original = btn.innerHTML;
+      var label = btn.innerHTML;
       btn.disabled = true;
-      btn.textContent = 'جارٍ إرسال الطلب…';
+      btn.textContent = 'جارٍ الإرسال…';
 
-      // محاكاة الإرسال — استبدلها باستدعاء الـ API الحقيقي عند الربط
+      // محاكاة — استبدلها باستدعاء الواجهة البرمجية الحقيقية
       setTimeout(function () {
         var order = {
           name: form.elements.name.value.trim(),
@@ -214,8 +202,8 @@
           city: form.elements.city.value,
           address: form.elements.address.value.trim(),
           notes: form.elements.notes.value.trim(),
-          qty: currentQty(),
-          total: PRICES[currentQty()],
+          qty: chosen(),
+          total: PRICES[chosen()],
           createdAt: new Date().toISOString()
         };
         store.set('lastOrder', JSON.stringify(order));
@@ -225,75 +213,79 @@
 
         $('#success').hidden = false;
         btn.disabled = false;
-        btn.innerHTML = original;
-        syncSummary();
-        toast('تم إرسال طلبك بنجاح 🎉');
-      }, 1200);
+        btn.innerHTML = label;
+        sync();
+        note('تم استلام طلبك');
+      }, 1000);
     });
 
-    var newOrder = $('#newOrder');
-    if (newOrder) {
-      newOrder.addEventListener('click', function () {
+    var again = $('#newOrder');
+    if (again) {
+      again.addEventListener('click', function () {
         form.reset();
         $('#success').hidden = true;
-        $$('.field.has-error', form).forEach(function (f) { f.classList.remove('has-error'); });
+        $$('.f.bad', form).forEach(function (f) { f.classList.remove('bad'); });
         $$('.err', form).forEach(function (f) { f.textContent = ''; });
-        syncSummary();
+        sync();
       });
     }
   }
 
-  /* ---------- الأسئلة الشائعة ---------- */
+  /* ---------- الأسئلة ---------- */
   $$('.faq__q').forEach(function (q) {
     q.addEventListener('click', function () {
       var item = q.parentElement;
       var panel = $('.faq__a', item);
-      var isOpen = item.classList.contains('is-open');
+      var open = item.classList.contains('is-open');
 
-      $$('.faq__item').forEach(function (other) {
+      $$('.faq__i').forEach(function (other) {
         other.classList.remove('is-open');
         $('.faq__a', other).style.maxHeight = null;
       });
 
-      if (!isOpen) {
+      if (!open) {
         item.classList.add('is-open');
         panel.style.maxHeight = panel.scrollHeight + 'px';
       }
     });
   });
 
-  /* ---------- الظهور عند التمرير ---------- */
-  (function reveal() {
-    var items = $$('.reveal');
-    if (!('IntersectionObserver' in window)) {
-      items.forEach(function (el) { el.classList.add('is-in'); });
-      return;
-    }
+  /* ---------- ظهور تدريجي ---------- */
+  (function rise() {
+    var sel = '.hero__body,.hero__shot,.sec__head,.notes li,.spec,.words figure,' +
+              '.ladder,.batch,.recap,.form,.faq,.close__in,.plate__cap';
+    var items = $$(sel);
+
+    if (!('IntersectionObserver' in window)) return;
+
+    items.forEach(function (el) { el.classList.add('rise'); });
+
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
-          entry.target.classList.add('is-in');
+          entry.target.classList.add('in');
           io.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px' });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px' });
+
     items.forEach(function (el) { io.observe(el); });
   })();
 
-  /* ---------- الهيدر والشريط الثابت ---------- */
-  (function onScroll() {
-    var header = $('#header');
-    var bar = $('#stickyBar');
-    var orderSection = $('#order');
+  /* ---------- التمرير ---------- */
+  (function scroll() {
+    var head = $('#head');
+    var dock = $('#dock');
+    var orderSec = $('#order');
 
     function update() {
       var y = window.pageYOffset;
-      if (header) header.classList.toggle('is-scrolled', y > 10);
+      if (head) head.classList.toggle('is-stuck', y > 8);
 
-      if (bar && orderSection) {
-        var rect = orderSection.getBoundingClientRect();
-        var inOrder = rect.top < window.innerHeight && rect.bottom > 0;
-        bar.classList.toggle('is-visible', y > 500 && !inOrder);
+      if (dock && orderSec) {
+        var r = orderSec.getBoundingClientRect();
+        var inside = r.top < window.innerHeight && r.bottom > 0;
+        dock.classList.toggle('is-up', y > 480 && !inside);
       }
     }
 
