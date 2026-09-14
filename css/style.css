@@ -23,7 +23,8 @@
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 
-html{scroll-behavior:smooth;scroll-padding-top:72px}
+/* الاتجاه مثبّت في التنسيقات لا في وسم html فقط، لتعمل الصفحة عند تضمينها */
+html{direction:rtl;scroll-behavior:smooth;scroll-padding-top:72px}
 
 body{
   margin:0;
