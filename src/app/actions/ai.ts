@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { fail, ok, toActionResult, type ActionResult } from '@/lib/errors';
 import { requireStoreContext } from '@/server/policies/context';
 import {
+  adoptLogoCandidate,
   COPY_FRAMEWORKS,
   generateLandingPage,
   generateLogoCandidates,
@@ -75,6 +76,31 @@ export async function generateLogoAction(
   try {
     const context = await requireStoreContext();
     return ok(await generateLogoCandidates(context, { storeName }));
+  } catch (error) {
+    return toActionResult(error);
+  }
+}
+
+const adoptLogoSchema = z.object({
+  storeName: z.string().trim().min(1).max(120),
+  candidateId: z.string().trim().regex(/^logo_\d+$/),
+});
+
+/**
+ * Turn a chosen candidate into a stored file and hand back its URL.
+ *
+ * The design form still has to be saved afterwards, so choosing a candidate
+ * never changes the live storefront by itself.
+ */
+export async function adoptLogoAction(input: unknown): Promise<ActionResult<{ url: string }>> {
+  const parsed = adoptLogoSchema.safeParse(input);
+  if (!parsed.success) {
+    return fail('VALIDATION_FAILED', 'Invalid input.', { fieldErrors: zodFieldErrors(parsed.error) });
+  }
+
+  try {
+    const context = await requireStoreContext();
+    return ok(await adoptLogoCandidate(context, parsed.data));
   } catch (error) {
     return toActionResult(error);
   }

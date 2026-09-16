@@ -6,6 +6,8 @@ import { logger } from '@/lib/logger';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { getAiProvider } from '@/server/ai/provider';
 import { assertPermission, type StoreContext } from '@/server/policies/context';
+import { getStorage } from '@/server/storage';
+
 import { assertFeature, assertWithinLimit } from './billing-service';
 
 /**
@@ -427,26 +429,12 @@ export async function generateLogoCandidates(
   assertPermission(context, 'storefront.manage');
   enforceRateLimit('aiGeneration', context.storeId);
 
-  const initials = input.storeName
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0] ?? '')
-    .join('');
+  const initials = logoInitials(input.storeName);
 
-  const palettes: string[][] = [
-    ['#00b77b', '#04150e'],
-    ['#3b9df5', '#081625'],
-    ['#f2a33c', '#20160a'],
-    ['#8b7cf6', '#150f2b'],
-    ['#e0577a', '#2a0f18'],
-    ['#16c98d', '#06201a'],
-  ];
-
-  const candidates = palettes.map((palette, index) => ({
+  const candidates = LOGO_PALETTES.map((palette, index) => ({
     id: `logo_${index}`,
     palette,
-    svg: renderLogoSvg(initials || 'A', input.storeName, palette, index),
+    svg: renderLogoSvg(initials, input.storeName, palette, index),
   }));
 
   await prisma.aiGeneration.create({
@@ -466,6 +454,61 @@ export async function generateLogoCandidates(
   });
 
   return candidates;
+}
+
+/**
+ * Adopt one of the generated candidates as the store logo file.
+ *
+ * The browser sends only the candidate's id, never its markup: the SVG is
+ * re-rendered here from the same deterministic function that produced the
+ * preview. That means no client-supplied SVG is ever written to disk or served
+ * back — which matters, because SVG is an executable document format.
+ *
+ * This writes the file and returns its URL. It does *not* set the store's
+ * logo — the merchant still saves the design form, so a generated logo never
+ * goes live on its own.
+ */
+export async function adoptLogoCandidate(
+  context: StoreContext,
+  input: { storeName: string; candidateId: string },
+): Promise<{ url: string }> {
+  assertPermission(context, 'storefront.manage');
+
+  const index = LOGO_PALETTES.findIndex((_, position) => `logo_${position}` === input.candidateId);
+  const palette = LOGO_PALETTES[index];
+  if (!palette) throw new AppError('NOT_FOUND', 'Logo candidate not found.');
+
+  const svg = renderLogoSvg(logoInitials(input.storeName), input.storeName, palette, index);
+
+  const stored = await getStorage().put({
+    storeId: context.storeId,
+    folder: 'branding',
+    filename: `logo-${input.candidateId}.svg`,
+    contentType: 'image/svg+xml',
+    data: Buffer.from(svg, 'utf8'),
+  });
+
+  return { url: stored.url };
+}
+
+const LOGO_PALETTES: string[][] = [
+  ['#00b77b', '#04150e'],
+  ['#3b9df5', '#081625'],
+  ['#f2a33c', '#20160a'],
+  ['#8b7cf6', '#150f2b'],
+  ['#e0577a', '#2a0f18'],
+  ['#16c98d', '#06201a'],
+];
+
+function logoInitials(storeName: string): string {
+  const initials = storeName
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0] ?? '')
+    .join('');
+
+  return initials || 'A';
 }
 
 function renderLogoSvg(

@@ -280,4 +280,34 @@
     background: #ffffff;
     color: #000000;
   }
+
+  /* When a print area is present, it is the only thing that prints.
+     Everything is hidden with `visibility` rather than `display` so the slip's
+     own ancestors stay in the layout tree — hiding them with `display: none`
+     would take the slip down with them. */
+  body:has(.print-area) * {
+    visibility: hidden;
+  }
+
+  body:has(.print-area) .print-area,
+  body:has(.print-area) .print-area * {
+    visibility: visible;
+  }
+
+  body:has(.print-area) .print-area {
+    position: absolute !important;
+    inset-inline-start: 0;
+    top: 0;
+    width: 100%;
+    transform: none !important;
+  }
+
+  .delivery-slip {
+    box-shadow: none !important;
+    margin: 0 auto;
+  }
+
+  @page {
+    margin: 8mm;
+  }
 }
