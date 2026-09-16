@@ -37,18 +37,23 @@ test.describe('storefront checkout', () => {
     await page.fill('input[type="tel"]', uniquePhone());
 
     // Only the fields this merchant configured are rendered, so each is filled
-    // if it exists rather than assumed.
+    // if it exists rather than assumed. Every required one has to actually
+    // land, though: an unfilled required field is how this test previously
+    // "passed" while watching the form correctly refuse to submit.
     for (const [label, value] of [
-      ['الاسم', 'عميل اختبار'],
-      ['الولاية', 'طرابلس'],
+      ['اسم العميل', 'عميل اختبار'],
+      ['المنطقة', 'طرابلس'],
       ['المدينة', 'تاجوراء'],
       ['العنوان', 'شارع الاختبار، مبنى ١'],
     ] as const) {
-      const field = page.getByLabel(new RegExp(label)).first();
-      if (await field.count()) await field.fill(value).catch(() => undefined);
+      const field = page.getByLabel(label).first();
+      if (await field.count()) await field.fill(value);
     }
 
-    await page.getByRole('button', { name: /تأكيد|اطلب|إتمام/ }).last().click();
+    await page.getByRole('button', { name: 'تأكيد الطلب' }).click();
+
+    // No field-level error means the form was accepted rather than rejected.
+    await expect(page.getByText('هذا الحقل مطلوب')).toHaveCount(0);
 
     // Polled rather than `waitForURL`: the redirect after a successful order is
     // a client-side router navigation, which fires no load event.
@@ -68,12 +73,12 @@ test.describe('storefront checkout', () => {
     await expect(page).toHaveURL(new RegExp(`/${STORE_SLUG}/checkout`), { timeout: 30_000 });
     await page.waitForLoadState('load');
 
-    await page.getByRole('button', { name: /تأكيد|اطلب|إتمام/ }).last().click();
+    await page.getByRole('button', { name: 'تأكيد الطلب' }).click();
 
     // The order must not be created, and the customer must stay where they can
-    // fix it.
-    await expect(page).not.toHaveURL(/order-success/);
+    // fix it — with the problem named, not just a silent no-op.
     await expect(page).toHaveURL(/\/checkout/);
+    await expect(page.getByText('هذا الحقل مطلوب').first()).toBeVisible();
   });
 });
 
