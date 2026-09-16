@@ -1,0 +1,283 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens.
+ *
+ * Dark is the dashboard default: the reference product is a dense dark control
+ * surface, not a marketing page. Every colour a component uses resolves through
+ * one of these variables — no component references a raw hex value, so a theme
+ * change is a token change.
+ */
+
+:root,
+:root[data-theme='dark'] {
+  --background: #071525;
+  --surface-1: #0b1929;
+  --surface-2: #101f31;
+  --surface-3: #16263a;
+  --surface-elevated: #16263a;
+
+  --foreground: #e8eef5;
+  --muted-foreground: #8fa3b8;
+  --subtle-foreground: #64788e;
+
+  --border: #1b2c40;
+  --border-strong: #263b53;
+  --input: #0e1c2c;
+
+  --primary: #00b77b;
+  --primary-hover: #08c98a;
+  --primary-active: #00a36d;
+  --primary-soft: rgba(0, 183, 123, 0.14);
+  --primary-foreground: #04150e;
+
+  --success: #16c98d;
+  --success-soft: rgba(22, 201, 141, 0.14);
+  --warning: #f2a33c;
+  --warning-soft: rgba(242, 163, 60, 0.14);
+  --danger: #f05252;
+  --danger-soft: rgba(240, 82, 82, 0.14);
+  --info: #3b9df5;
+  --info-soft: rgba(59, 157, 245, 0.14);
+  --accent: #8b7cf6;
+  --accent-soft: rgba(139, 124, 246, 0.14);
+
+  --focus-ring: #08c98a;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-overlay: 0 12px 32px rgba(0, 0, 0, 0.45);
+
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --motion-fast: 120ms;
+  --motion-base: 180ms;
+  --motion-slow: 240ms;
+
+  --font-sans: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, monospace;
+
+  --topbar-height: 56px;
+  --sidebar-width: 244px;
+  --sidebar-collapsed-width: 64px;
+  --bottom-nav-height: 60px;
+}
+
+:root[data-theme='light'] {
+  --background: #f4f7fa;
+  --surface-1: #ffffff;
+  --surface-2: #ffffff;
+  --surface-3: #f0f4f8;
+  --surface-elevated: #ffffff;
+
+  --foreground: #0d1b2a;
+  --muted-foreground: #5a6b7d;
+  --subtle-foreground: #8195a8;
+
+  --border: #dde5ed;
+  --border-strong: #c3d0dd;
+  --input: #ffffff;
+
+  --primary: #009c68;
+  --primary-hover: #00b77b;
+  --primary-active: #008659;
+  --primary-soft: rgba(0, 156, 104, 0.1);
+  --primary-foreground: #ffffff;
+
+  --success: #059669;
+  --success-soft: rgba(5, 150, 105, 0.1);
+  --warning: #d97706;
+  --warning-soft: rgba(217, 119, 6, 0.1);
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+  --info: #2563eb;
+  --info-soft: rgba(37, 99, 235, 0.1);
+  --accent: #7c3aed;
+  --accent-soft: rgba(124, 58, 237, 0.1);
+
+  --focus-ring: #009c68;
+
+  --shadow-card: 0 1px 2px rgba(13, 27, 42, 0.06);
+  --shadow-overlay: 0 12px 32px rgba(13, 27, 42, 0.14);
+}
+
+/*
+ * Storefront surface. The merchant dashboard and the shop a customer sees are
+ * different products; the storefront defaults to light and picks up the
+ * merchant's brand colour.
+ */
+.storefront-scope {
+  --background: #ffffff;
+  --surface-1: #ffffff;
+  --surface-2: #f7f9fb;
+  --surface-3: #eef2f6;
+  --surface-elevated: #ffffff;
+  --foreground: #101b28;
+  --muted-foreground: #5b6a7a;
+  --subtle-foreground: #8695a5;
+  --border: #e4eaf0;
+  --border-strong: #cdd7e1;
+  --input: #ffffff;
+  --shadow-card: 0 1px 3px rgba(16, 27, 40, 0.08);
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    font-feature-settings: 'ss01';
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Latin digits in Arabic UI: order numbers and totals read faster, and the
+     bidi algorithm handles them predictably next to Arabic text. */
+  [lang='ar'] {
+    font-variant-numeric: lining-nums;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--primary-soft);
+  }
+
+  input, textarea, select, button {
+    font: inherit;
+  }
+
+  /* Arabic numerals inside inputs stay LTR even in an RTL document. */
+  input[type='tel'],
+  input[type='number'],
+  input[inputmode='numeric'],
+  input[inputmode='decimal'],
+  .numeric {
+    direction: ltr;
+    text-align: start;
+    font-variant-numeric: tabular-nums;
+  }
+
+  [dir='rtl'] .numeric-cell {
+    direction: ltr;
+    text-align: right;
+  }
+
+  [dir='ltr'] .numeric-cell {
+    text-align: left;
+  }
+}
+
+@layer components {
+  /* Scrollbars: thin and quiet, so a dense table does not gain a heavy frame. */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--border-strong);
+    border-radius: 999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Directional icon flip. Chevrons and arrows must mirror in RTL; logos,
+     media controls and numbers must not. */
+  [dir='rtl'] .rtl-flip {
+    transform: scaleX(-1);
+  }
+
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--surface-3);
+  }
+
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent
+    );
+    animation: shimmer 1.6s infinite;
+  }
+
+  [dir='rtl'] .skeleton::after {
+    animation-direction: reverse;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+}
