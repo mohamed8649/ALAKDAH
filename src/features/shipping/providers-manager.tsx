@@ -18,6 +18,7 @@ import { useToast } from '@/components/ui/toast';
 import { FormError } from '@/features/shared/form-error';
 import { useServerAction } from '@/hooks/use-server-action';
 import { useLocale, useTranslations } from '@/i18n/provider';
+import { RelativeTime } from '@/features/shared/relative-time';
 import { formatRelative } from '@/lib/datetime';
 
 interface CredentialField {
@@ -123,7 +124,7 @@ export function ShippingProvidersManager({
                         )
                       }
                     >
-                      {formatRelative(provider.lastTestedAt, locale)}
+                      <RelativeTime value={provider.lastTestedAt} locale={locale} />
                     </Badge>
                   ) : null}
                 </div>

@@ -19,7 +19,7 @@ import { useToast } from '@/components/ui/toast';
 import { FormError } from '@/features/shared/form-error';
 import { useServerAction } from '@/hooks/use-server-action';
 import { useLocale, useTranslations } from '@/i18n/provider';
-import { formatRelative } from '@/lib/datetime';
+import { formatDateTime } from '@/lib/datetime';
 
 interface CredentialFieldRow {
   key: string;
@@ -163,8 +163,12 @@ export function IntegrationsManager({
 
                 {integration.lastSyncAt ? (
                   <p className="text-xs text-subtle-foreground">
+                    {/* An absolute date rather than "3 minutes ago": this one is
+                        interpolated into a sentence, so it cannot be a component,
+                        and a relative string computed during render would not
+                        survive hydration. */}
                     {t('lastSync', {
-                      when: formatRelative(new Date(integration.lastSyncAt), currentLocale),
+                      when: formatDateTime(integration.lastSyncAt, currentLocale),
                     })}
                   </p>
                 ) : null}

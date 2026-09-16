@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
 import { loginAction } from '@/app/actions/auth';
@@ -15,20 +14,19 @@ import { loginSchema, type LoginInput } from '@/validators/auth';
 export function LoginForm({ locale }: { locale: string }) {
   const t = useTranslations('auth');
   const tValidation = useTranslations();
-  const router = useRouter();
-  const { run, submitting, error, fieldError } = useServerAction(loginAction);
+  const { run, submitting, error, fieldError } = useServerAction((values: LoginInput) =>
+    loginAction(values, locale),
+  );
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
 
+  // On success the action redirects server-side and never returns, so there is
+  // nothing to do here but let the error states render.
   const onSubmit = form.handleSubmit(async (values) => {
-    const result = await run(values);
-    if (result) {
-      router.replace(`/${locale}${result.redirectTo}`);
-      router.refresh();
-    }
+    await run(values);
   });
 
   return (

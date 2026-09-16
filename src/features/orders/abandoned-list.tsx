@@ -12,6 +12,7 @@ import { EmptyState } from '@/components/ui/states';
 import { useToast } from '@/components/ui/toast';
 import { useServerAction } from '@/hooks/use-server-action';
 import { useLocale, useTranslations } from '@/i18n/provider';
+import { RelativeTime } from '@/features/shared/relative-time';
 import { formatRelative } from '@/lib/datetime';
 import { formatMoney } from '@/lib/money';
 import { isolateLtr } from '@/lib/phone';
@@ -117,7 +118,7 @@ export function AbandonedList({
                     {item.city || item.state ? (
                       <span>{[item.city, item.state].filter(Boolean).join('، ')}</span>
                     ) : null}
-                    <span>{formatRelative(new Date(item.updatedAt), currentLocale)}</span>
+                    <RelativeTime value={item.updatedAt} locale={currentLocale} />
                   </p>
                 </div>
 

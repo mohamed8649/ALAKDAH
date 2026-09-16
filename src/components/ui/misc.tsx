@@ -27,26 +27,34 @@ export const Checkbox = forwardRef<
   ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
 >(function Checkbox({ className, ...props }, ref) {
   return (
-    <CheckboxPrimitive.Root
-      ref={ref}
-      className={cn(
-        'peer size-4 shrink-0 rounded-[3px] border border-border-strong bg-[var(--input)]',
-        'transition-colors duration-fast',
-        'data-[state=checked]:border-primary data-[state=checked]:bg-primary',
-        'data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary',
-        'disabled:cursor-not-allowed disabled:opacity-50',
-        className,
-      )}
-      {...props}
-    >
-      <CheckboxPrimitive.Indicator className="flex items-center justify-center text-[var(--primary-foreground)]">
-        {props.checked === 'indeterminate' ? (
-          <Minus className="size-3" aria-hidden />
-        ) : (
-          <Check className="size-3" strokeWidth={3} aria-hidden />
+    // The wrapper is load-bearing. Radix renders a hidden, absolutely
+    // positioned input *beside* the control for form participation. With no
+    // positioning context of its own it resolves against a distant ancestor,
+    // and its translateX(-100%) puts it past the page edge in RTL — silently
+    // widening the document and producing a horizontal scrollbar on pages
+    // that look fine. `clip` contains it without creating a scroll container.
+    <span className="relative inline-flex shrink-0 [overflow:clip]">
+      <CheckboxPrimitive.Root
+        ref={ref}
+        className={cn(
+          'peer size-4 shrink-0 rounded-[3px] border border-border-strong bg-[var(--input)]',
+          'transition-colors duration-fast',
+          'data-[state=checked]:border-primary data-[state=checked]:bg-primary',
+          'data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary',
+          'disabled:cursor-not-allowed disabled:opacity-50',
+          className,
         )}
-      </CheckboxPrimitive.Indicator>
-    </CheckboxPrimitive.Root>
+        {...props}
+      >
+        <CheckboxPrimitive.Indicator className="flex items-center justify-center text-[var(--primary-foreground)]">
+          {props.checked === 'indeterminate' ? (
+            <Minus className="size-3" aria-hidden />
+          ) : (
+            <Check className="size-3" strokeWidth={3} aria-hidden />
+          )}
+        </CheckboxPrimitive.Indicator>
+      </CheckboxPrimitive.Root>
+    </span>
   );
 });
 
@@ -91,26 +99,30 @@ export const Switch = forwardRef<
   ComponentPropsWithoutRef<typeof SwitchPrimitive.Root>
 >(function Switch({ className, ...props }, ref) {
   return (
-    <SwitchPrimitive.Root
-      ref={ref}
-      className={cn(
-        'peer inline-flex h-5 w-9 shrink-0 items-center rounded-full border border-transparent',
-        'bg-surface-3 transition-colors duration-fast',
-        'data-[state=checked]:bg-primary',
-        'disabled:cursor-not-allowed disabled:opacity-50',
-        className,
-      )}
-      {...props}
-    >
-      <SwitchPrimitive.Thumb
+    // See the note on Checkbox: this wrapper keeps Radix's hidden input inside
+    // the control instead of off the edge of an RTL page.
+    <span className="relative inline-flex shrink-0 [overflow:clip]">
+      <SwitchPrimitive.Root
+        ref={ref}
         className={cn(
-          'pointer-events-none block size-4 rounded-full bg-white shadow',
-          'transition-transform duration-fast',
-          'translate-x-0.5 data-[state=checked]:translate-x-[18px]',
-          'rtl:-translate-x-0.5 rtl:data-[state=checked]:-translate-x-[18px]',
+          'peer inline-flex h-5 w-9 shrink-0 items-center rounded-full border border-transparent',
+          'bg-surface-3 transition-colors duration-fast',
+          'data-[state=checked]:bg-primary',
+          'disabled:cursor-not-allowed disabled:opacity-50',
+          className,
         )}
-      />
-    </SwitchPrimitive.Root>
+        {...props}
+      >
+        <SwitchPrimitive.Thumb
+          className={cn(
+            'pointer-events-none block size-4 rounded-full bg-white shadow',
+            'transition-transform duration-fast',
+            'translate-x-0.5 data-[state=checked]:translate-x-[18px]',
+            'rtl:-translate-x-0.5 rtl:data-[state=checked]:-translate-x-[18px]',
+          )}
+        />
+      </SwitchPrimitive.Root>
+    </span>
   );
 });
 

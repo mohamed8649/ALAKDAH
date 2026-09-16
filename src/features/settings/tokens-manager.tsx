@@ -15,6 +15,7 @@ import { useToast } from '@/components/ui/toast';
 import { FormError } from '@/features/shared/form-error';
 import { useServerAction } from '@/hooks/use-server-action';
 import { useTranslations } from '@/i18n/provider';
+import { RelativeTime } from '@/features/shared/relative-time';
 import { formatDate, formatRelative } from '@/lib/datetime';
 
 interface TokenRow {
@@ -109,7 +110,7 @@ export function TokensManager({
 
                     <span className="text-2xs text-subtle-foreground">
                       {token.lastUsedAt
-                        ? formatRelative(token.lastUsedAt, locale)
+                        ? <RelativeTime value={token.lastUsedAt} locale={locale} />
                         : t('neverUsed')}
                     </span>
 

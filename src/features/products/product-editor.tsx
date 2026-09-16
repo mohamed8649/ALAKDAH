@@ -180,9 +180,12 @@ export function ProductEditor({
     toast({ title: isNew ? t('created') : t('updated'), tone: 'success' });
 
     if (isNew) {
+      // The replace fetches the edit route fresh; refreshing as well would
+      // re-render the page being left and cancel the navigation.
       router.replace(`/${locale}/dashboard/products/${result.id}/edit`);
+    } else {
+      router.refresh();
     }
-    router.refresh();
   };
 
   const hasVariants = values.options.some(

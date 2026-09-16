@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { agentLoginAction } from '@/app/actions/auth';
@@ -9,6 +8,7 @@ import { Field, Input } from '@/components/ui/field';
 import { FormError } from '@/features/shared/form-error';
 import { useServerAction } from '@/hooks/use-server-action';
 import { useTranslations } from '@/i18n/provider';
+import type { AgentLoginInput } from '@/validators/agent';
 
 /**
  * Agent sign-in.
@@ -25,21 +25,19 @@ export function AgentLoginForm({
   defaultStore: string;
 }) {
   const t = useTranslations('auth');
-  const router = useRouter();
 
   const [storeIdentifier, setStoreIdentifier] = useState(defaultStore);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const { run, submitting, error, fieldError } = useServerAction(agentLoginAction);
+  const { run, submitting, error, fieldError } = useServerAction((values: AgentLoginInput) =>
+    agentLoginAction(values, locale),
+  );
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const result = await run({ storeIdentifier, username, password });
-    if (result) {
-      router.replace(`/${locale}${result.redirectTo}`);
-      router.refresh();
-    }
+    // The action redirects server-side on success; see the note in auth actions.
+    await run({ storeIdentifier, username, password });
   };
 
   return (

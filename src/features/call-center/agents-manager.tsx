@@ -35,6 +35,7 @@ import { useToast } from '@/components/ui/toast';
 import { FormError } from '@/features/shared/form-error';
 import { useServerAction } from '@/hooks/use-server-action';
 import { useTranslations } from '@/i18n/provider';
+import { RelativeTime } from '@/features/shared/relative-time';
 import { formatRelative } from '@/lib/datetime';
 import { formatNumber } from '@/lib/money';
 
@@ -191,7 +192,7 @@ export function AgentsManager({
 
                     <p className="text-2xs text-subtle-foreground">
                       {agent.lastLoginAt
-                        ? formatRelative(agent.lastLoginAt, locale)
+                        ? <RelativeTime value={agent.lastLoginAt} locale={locale} />
                         : tApp('none')}
                     </p>
                   </CardBody>

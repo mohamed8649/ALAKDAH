@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/ui/states';
 import { OrderStatusBadge } from '@/features/orders/status-badge';
 import type { OrderListItem } from '@/server/services/order-service';
 import { useTranslations } from '@/i18n/provider';
+import { RelativeTime } from '@/features/shared/relative-time';
 import { formatRelative } from '@/lib/datetime';
 import { formatMoney } from '@/lib/money';
 import { formatPhone, isolateLtr } from '@/lib/phone';
@@ -76,7 +77,7 @@ export function RecentOrders({
                       {formatMoney(order.total, currency, locale)}
                     </p>
                     <p className="mt-0.5 text-2xs text-subtle-foreground">
-                      {formatRelative(order.createdAt, locale)}
+                      <RelativeTime value={order.createdAt} locale={locale} />
                     </p>
                   </div>
                 </Link>

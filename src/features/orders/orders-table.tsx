@@ -18,6 +18,7 @@ import { useDebouncedFilter, useUrlFilters } from '@/hooks/use-url-filters';
 import { useServerAction } from '@/hooks/use-server-action';
 import { useTranslations } from '@/i18n/provider';
 import { cn } from '@/lib/cn';
+import { RelativeTime } from '@/features/shared/relative-time';
 import { formatDateTime, formatRelative } from '@/lib/datetime';
 import { formatMoney, formatNumber } from '@/lib/money';
 import { formatPhone, isolateLtr } from '@/lib/phone';
@@ -141,12 +142,12 @@ export function OrdersTable({
       header: tApp('createdAt'),
       width: '150px',
       render: (order) => (
-        <span
+        <RelativeTime
+          value={order.createdAt}
+          locale={locale}
+          timezone={timezone}
           className="text-muted-foreground"
-          title={formatDateTime(order.createdAt, locale, timezone)}
-        >
-          {formatRelative(order.createdAt, locale)}
-        </span>
+        />
       ),
     },
   ];
@@ -447,9 +448,12 @@ export function OrdersTable({
                 <p className="text-[13px] font-medium tabular-nums text-foreground">
                   {formatMoney(order.total, currency, locale)}
                 </p>
-                <p className="mt-0.5 text-2xs text-subtle-foreground">
-                  {formatRelative(order.createdAt, locale)}
-                </p>
+                <RelativeTime
+                  value={order.createdAt}
+                  locale={locale}
+                  timezone={timezone}
+                  className="mt-0.5 block text-2xs text-subtle-foreground"
+                />
               </div>
             </div>
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -17,8 +16,9 @@ import { registerSchema, type RegisterInput } from '@/validators/auth';
 export function RegisterForm({ locale, appUrl }: { locale: string; appUrl: string }) {
   const t = useTranslations('auth');
   const tValidation = useTranslations();
-  const router = useRouter();
-  const { run, submitting, error, fieldError } = useServerAction(registerAction);
+  const { run, submitting, error, fieldError } = useServerAction((values: RegisterInput) =>
+    registerAction(values, locale),
+  );
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
@@ -42,12 +42,9 @@ export function RegisterForm({ locale, appUrl }: { locale: string; appUrl: strin
     }
   }, [storeName, slugTouched, form]);
 
+  // The action redirects server-side on success; see the note in auth actions.
   const onSubmit = form.handleSubmit(async (values) => {
-    const result = await run(values);
-    if (result) {
-      router.replace(`/${locale}${result.redirectTo}`);
-      router.refresh();
-    }
+    await run(values);
   });
 
   const errorFor = (name: keyof RegisterInput) => {
