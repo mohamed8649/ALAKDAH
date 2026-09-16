@@ -25,13 +25,13 @@ test.describe('storefront checkout', () => {
     await expect(firstProduct).toBeVisible();
     await firstProduct.click();
 
-    await page.waitForURL(`**/${STORE_SLUG}/products/**`);
+    await expect(page).toHaveURL(new RegExp(`/${STORE_SLUG}/products/`));
     await expect(page.locator('h1').first()).toBeVisible();
     await page.waitForLoadState('load');
 
     // Straight to checkout — the direct-buy path a landing page also uses.
     await page.getByRole('button', { name: /اشتر|اطلب/ }).first().click();
-    await page.waitForURL(`**/${STORE_SLUG}/checkout**`, { timeout: 30_000 });
+    await expect(page).toHaveURL(new RegExp(`/${STORE_SLUG}/checkout`), { timeout: 30_000 });
     await page.waitForLoadState('load');
 
     await page.fill('input[type="tel"]', uniquePhone());
@@ -50,7 +50,9 @@ test.describe('storefront checkout', () => {
 
     await page.getByRole('button', { name: /تأكيد|اطلب|إتمام/ }).last().click();
 
-    await page.waitForURL('**/order-success**', { timeout: 30_000 });
+    // Polled rather than `waitForURL`: the redirect after a successful order is
+    // a client-side router navigation, which fires no load event.
+    await expect(page).toHaveURL(/order-success/, { timeout: 30_000 });
     await expect(page.locator('body')).toContainText(/شكرا|شكراً|تم/);
   });
 
@@ -59,11 +61,11 @@ test.describe('storefront checkout', () => {
     await page.waitForLoadState('load');
 
     await page.locator(`a[href^="/ar/${STORE_SLUG}/products/"]`).first().click();
-    await page.waitForURL(`**/${STORE_SLUG}/products/**`);
+    await expect(page).toHaveURL(new RegExp(`/${STORE_SLUG}/products/`));
     await page.waitForLoadState('load');
 
     await page.getByRole('button', { name: /اشتر|اطلب/ }).first().click();
-    await page.waitForURL(`**/${STORE_SLUG}/checkout**`, { timeout: 30_000 });
+    await expect(page).toHaveURL(new RegExp(`/${STORE_SLUG}/checkout`), { timeout: 30_000 });
     await page.waitForLoadState('load');
 
     await page.getByRole('button', { name: /تأكيد|اطلب|إتمام/ }).last().click();

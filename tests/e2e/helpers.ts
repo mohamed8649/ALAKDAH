@@ -1,4 +1,4 @@
-import type { BrowserContext, Page } from '@playwright/test';
+import { expect, type BrowserContext, type Page } from '@playwright/test';
 
 /** Credentials created by `npm run db:seed`. */
 export const MERCHANT = { email: 'demo@alakdah.ly', password: 'demo1234' };
@@ -35,7 +35,9 @@ export async function loginAsMerchant(page: Page, locale = 'ar'): Promise<void> 
   await page.fill('input[type="password"]', MERCHANT.password);
   await page.getByRole('button', { name: 'دخول', exact: true }).click();
 
-  await page.waitForURL('**/dashboard**', { timeout: 30_000 });
+  // Polled rather than `waitForURL`: the redirect after login is a
+  // client-side router navigation, which fires no load event.
+  await expect(page).toHaveURL(/\/dashboard/, { timeout: 30_000 });
 }
 
 /** A phone number that is unique per run, so repeated runs do not collide. */
