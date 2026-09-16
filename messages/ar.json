@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "العقدة",
+    "name": "الأكدح",
     "tagline": "منصة إدارة التجارة الإلكترونية",
     "loading": "جارٍ التحميل…",
     "saving": "جارٍ الحفظ…",
@@ -72,7 +72,6 @@
     "to": "إلى",
     "createdAt": "تاريخ الإنشاء",
     "updatedAt": "آخر تحديث",
-    "name": "الاسم",
     "description": "الوصف",
     "price": "السعر",
     "quantity": "الكمية",
@@ -108,7 +107,8 @@
     "closeMenu": "إغلاق القائمة",
     "sortBy": "ترتيب حسب",
     "newest": "الأحدث",
-    "oldest": "الأقدم"
+    "oldest": "الأقدم",
+    "image": "الصورة"
   },
   "errors": {
     "UNAUTHENTICATED": "انتهت الجلسة. يرجى تسجيل الدخول من جديد.",
@@ -152,9 +152,12 @@
     "invalidNumber": "قيمة رقمية غير صحيحة",
     "invalidSlug": "استخدم أحرفاً لاتينية صغيرة وأرقاماً وشرطات فقط",
     "passwordTooWeak": "كلمة المرور يجب أن تكون ٨ أحرف على الأقل",
-    "passwordMismatch": "كلمتا المرور غير متطابقتين",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين.",
     "endBeforeStart": "تاريخ النهاية يجب أن يكون بعد تاريخ البداية",
-    "selectAtLeastOne": "اختر عنصراً واحداً على الأقل"
+    "selectAtLeastOne": "اختر عنصراً واحداً على الأقل",
+    "invalidPixelId": "صيغة المعرّف غير صحيحة.",
+    "passwordTooShort": "كلمة المرور يجب ألا تقل عن ٨ أحرف.",
+    "incorrectPassword": "كلمة المرور الحالية غير صحيحة."
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -180,7 +183,8 @@
     "username": "اسم المستخدم",
     "backToMerchantLogin": "دخول التجار",
     "loggingIn": "جارٍ الدخول…",
-    "welcomeBack": "أهلاً بعودتك"
+    "welcomeBack": "أهلاً بعودتك",
+    "passwordHint": "استخدم ٨ أحرف على الأقل."
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -408,7 +412,11 @@
         "simple": "بسيطة ومباشرة"
       },
       "length": "طول النص",
-      "lengths": { "short": "قصير", "medium": "متوسط", "long": "مفصل" },
+      "lengths": {
+        "short": "قصير",
+        "medium": "متوسط",
+        "long": "مفصل"
+      },
       "instructions": "تعليمات إضافية",
       "generating": "جارٍ التوليد…",
       "regenerate": "توليد نص آخر",
@@ -854,7 +862,23 @@
       "createdWarning": "انسخ المفتاح الآن — لن تتمكن من رؤيته مرة أخرى.",
       "empty": "لا توجد مفاتيح وصول"
     },
-    "saved": "تم حفظ الإعدادات"
+    "saved": "تم حفظ الإعدادات",
+    "profile": {
+      "title": "الملف الشخصي",
+      "subtitle": "بياناتك الشخصية وكلمة المرور.",
+      "account": "الحساب",
+      "fullName": "الاسم الكامل",
+      "avatar": "الصورة الشخصية",
+      "emailLocked": "لا يمكن تغيير البريد من هنا.",
+      "localeHint": "لغة لوحة التحكم الخاصة بك فقط، لا تؤثر على متجرك.",
+      "changePassword": "تغيير كلمة المرور",
+      "changePasswordHint": "بعد التغيير سيتم تسجيل الخروج من كل الأجهزة، بما فيها هذا الجهاز.",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "saved": "تم حفظ الملف الشخصي",
+      "passwordChanged": "تم تغيير كلمة المرور. سجّل الدخول من جديد."
+    }
   },
   "storefront": {
     "home": "الرئيسية",
@@ -1086,7 +1110,7 @@
     "connected": "مرتبط",
     "disconnected": "غير مرتبط",
     "error": "خطأ في الاتصال",
-    "lastSync": "آخر مزامنة",
+    "lastSync": "آخر مزامنة: {when}",
     "neverSynced": "لم تتم المزامنة",
     "sync": "مزامنة الآن",
     "syncing": "جارٍ المزامنة…",
@@ -1121,6 +1145,26 @@
         "COMPLETED_WITH_ERRORS": "مكتمل مع أخطاء",
         "FAILED": "فشل"
       }
+    },
+    "statusConnected": "مرتبط",
+    "statusDisconnected": "غير مرتبط",
+    "statusError": "يحتاج مراجعة",
+    "proposal": "مقترح",
+    "test": "اختبار",
+    "testPassed": "البيانات مكتملة",
+    "testMissingCredentials": "ناقص بيانات اعتماد",
+    "startImport": "استيراد بيانات",
+    "credentialsNote": "تُخزَّن البيانات السرية مشفّرة ولا يمكن عرضها بعد الحفظ.",
+    "noCredentialsNeeded": "لا يحتاج هذا المصدر إلى بيانات اعتماد.",
+    "secretStored": "محفوظ حالياً: {mask}",
+    "leaveBlankToKeep": "اتركه فارغاً للإبقاء على المحفوظ",
+    "disconnectTitle": "فصل التكامل",
+    "disconnectWarning": "سيتم حذف بيانات الاعتماد المحفوظة. ستحتاج إلى إدخالها من جديد للربط مرة أخرى.",
+    "capabilities": {
+      "import_orders": "استيراد طلبات",
+      "import_products": "استيراد منتجات",
+      "export_orders": "تصدير طلبات",
+      "sync_status": "مزامنة الحالة"
     }
   },
   "pixels": {
@@ -1140,10 +1184,27 @@
       "order_created": "إنشاء طلب",
       "order_confirmed": "تأكيد طلب",
       "order_shipped": "شحن طلب",
-      "order_delivered": "توصيل طلب"
+      "order_delivered": "توصيل طلب",
+      "page_view": "مشاهدة صفحة",
+      "product_view": "مشاهدة منتج"
     },
     "enabled": "مفعّل",
-    "saved": "تم حفظ إعدادات البكسل"
+    "saved": "تم حفظ إعدادات البكسل",
+    "codWarning": "لا يوجد ربط تلقائي بين أحداث الطلب وحدث الشراء. في الدفع عند الاستلام، الطلب ليس بيعاً مؤكداً حتى يُسلَّم ويُدفع — أنت من يقرر أي حدث يُحسب تحويلاً.",
+    "setup": "إعداد",
+    "mappedCount": "{count} حدث مربوط",
+    "mappingNote": "الأحداث غير المربوطة لا تُرسل إطلاقاً.",
+    "activeLabel": "تفعيل البكسل",
+    "activeHint": "عند التفعيل يُحمَّل سكربت المزوّد في صفحات المتجر.",
+    "serverToken": "رمز الـ Conversions API",
+    "serverTokenHint": "يُخزَّن مشفّراً على الخادم ولا يصل إلى المتصفح.",
+    "tokenStored": "محفوظ حالياً: {mask}",
+    "useSuggested": "اقتراح",
+    "notSent": "— لا تُرسل —",
+    "revenueEventHint": "حدث مرتبط بالإيراد — اختر بعناية.",
+    "removed": "تم حذف البكسل",
+    "removeTitle": "حذف البكسل",
+    "removeWarning": "سيتوقف إرسال أي حدث لهذا المزوّد."
   },
   "staff": {
     "title": "الموظفون والصلاحيات",
@@ -1278,7 +1339,9 @@
       "DISMISSED": "متجاهل"
     },
     "markDismissed": "تجاهل",
-    "privacyNote": "لا تُخزَّن أي بيانات لم يدخلها العميل بنفسه."
+    "privacyNote": "لا تُخزَّن أي بيانات لم يدخلها العميل بنفسه.",
+    "call": "اتصال",
+    "unknownCustomer": "عميل بدون اسم"
   },
   "qr": {
     "title": "مولّد QR",
@@ -1286,7 +1349,15 @@
     "destination": "الرابط أو النص",
     "generate": "توليد",
     "download": "تنزيل PNG",
-    "size": "الحجم"
+    "size": "الحجم",
+    "preset": "وجهة جاهزة",
+    "custom": "رابط مخصص",
+    "failed": "تعذّر توليد الرمز لهذا النص.",
+    "emptyHint": "أدخل رابطاً لعرض الرمز.",
+    "presets": {
+      "products": "صفحة المنتجات",
+      "track": "صفحة تتبع الطلب"
+    }
   },
   "collections": {
     "title": "المجموعات",
@@ -1295,7 +1366,12 @@
     "empty": "لا توجد مجموعات",
     "emptyDescription": "أنشئ مجموعة لتجميع منتجات مترابطة.",
     "handle": "الرابط",
-    "productsCount": "{count} منتج"
+    "productsCount": "{count} منتج",
+    "image": "صورة المجموعة",
+    "handleHint": "يُستخدم في رابط المجموعة داخل المتجر. يُولَّد تلقائياً إذا تركته فارغاً.",
+    "deleteTitle": "حذف المجموعة",
+    "deleteWarning": "تُحذف المجموعة فقط. المنتجات داخلها تبقى كما هي.",
+    "titleField": "العنوان"
   },
   "trustBadges": {
     "title": "شارات الثقة",
@@ -1314,6 +1390,60 @@
       "headphones": "دعم",
       "clock": "سرعة",
       "check": "تأكيد"
+    }
+  },
+  "import": {
+    "title": "استيراد بيانات",
+    "subtitle": "ارفع ملفاً، اربط أعمدته بحقول المنصة، ثم راجع قبل التنفيذ.",
+    "step1": "١. الملف",
+    "step1Hint": "ملف CSV أو TSV، الصف الأول عناوين الأعمدة.",
+    "step2": "٢. ربط الأعمدة",
+    "step2Hint": "حدد ما يقابل كل عمود. الأعمدة غير المربوطة تُتجاهل.",
+    "step3": "٣. المراجعة",
+    "step3Hint": "أول صفوف الملف كما ستُقرأ بعد الربط.",
+    "target": "نوع البيانات",
+    "targets": {
+      "products": "منتجات",
+      "orders": "طلبات"
+    },
+    "chooseFile": "اختر ملفاً",
+    "fileTooLarge": "الملف أكبر من {max} ميجابايت.",
+    "rowCount": "{count} صف",
+    "missingRequired": "حقول مطلوبة غير مربوطة: {fields}",
+    "ignoreColumn": "— تجاهل —",
+    "runImport": "استيراد {count} صف",
+    "emptyTitle": "لم تختر ملفاً بعد",
+    "emptyHint": "اختر ملف CSV لعرض أعمدته وربطها.",
+    "finished": "انتهى الاستيراد.",
+    "history": "سجل الاستيراد",
+    "historyHint": "آخر عمليات الاستيراد ونتائجها.",
+    "noJobs": "لا توجد عمليات استيراد",
+    "noJobsHint": "ستظهر هنا كل عملية استيراد بنتيجتها.",
+    "jobSummary": "مستورد {imported} · متخطى {skipped} · فشل {failed} من {total}",
+    "status": {
+      "PENDING": "في الانتظار",
+      "PROCESSING": "قيد المعالجة",
+      "COMPLETED": "مكتمل",
+      "COMPLETED_WITH_ERRORS": "مكتمل مع أخطاء",
+      "FAILED": "فشل"
+    },
+    "fields": {
+      "name": "اسم المنتج",
+      "sku": "رمز المنتج (SKU)",
+      "price": "السعر",
+      "compareAtPrice": "السعر قبل الخصم",
+      "stock": "المخزون",
+      "category": "التصنيف",
+      "description": "الوصف",
+      "imageUrl": "رابط الصورة",
+      "customerName": "اسم العميل",
+      "customerPhone": "رقم الهاتف",
+      "state": "الولاية",
+      "city": "المدينة",
+      "address": "العنوان",
+      "productName": "اسم المنتج",
+      "quantity": "الكمية",
+      "notes": "ملاحظات"
     }
   }
 }

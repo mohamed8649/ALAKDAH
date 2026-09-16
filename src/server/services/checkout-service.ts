@@ -6,6 +6,7 @@ import { AppError, type FieldErrors } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { normalisePhone } from '@/lib/phone';
 import { enforceRateLimit } from '@/lib/rate-limit';
+import { assertPermission, type StoreContext } from '@/server/policies/context';
 import { clientIp } from './audit-service';
 import { countRecentOrders } from './customer-service';
 import { createOrder, resolveOrderLines } from './order-service';
@@ -323,4 +324,73 @@ async function markRecovered(storeId: string, sessionId: string, orderId: string
       error: String(error),
     });
   }
+}
+
+export interface AbandonedRow {
+  id: string;
+  sessionId: string;
+  customerName: string | null;
+  customerPhone: string | null;
+  state: string | null;
+  city: string | null;
+  itemCount: number;
+  value: number;
+  checkoutStep: string;
+  status: 'OPEN' | 'RECOVERED' | 'DISMISSED';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Abandoned checkouts for the dashboard.
+ *
+ * Recovered rows are kept rather than deleted: a merchant judging whether the
+ * feature is worth its noise needs to see how many of these turned into
+ * orders, not just how many are still open.
+ */
+export async function listAbandoned(
+  context: StoreContext,
+  status: 'OPEN' | 'RECOVERED' | 'DISMISSED' | 'ALL' = 'OPEN',
+  limit = 100,
+): Promise<AbandonedRow[]> {
+  assertPermission(context, 'orders.view');
+
+  const rows = await prisma.abandonedCheckout.findMany({
+    where: {
+      storeId: context.storeId,
+      ...(status === 'ALL' ? {} : { status }),
+    },
+    orderBy: { updatedAt: 'desc' },
+    take: limit,
+  });
+
+  return rows.map((row) => {
+    const cart = Array.isArray(row.cart) ? (row.cart as unknown[]) : [];
+    return {
+      id: row.id,
+      sessionId: row.sessionId,
+      customerName: row.customerName,
+      customerPhone: row.customerPhone,
+      state: row.state,
+      city: row.city,
+      itemCount: cart.length,
+      value: row.value,
+      checkoutStep: row.checkoutStep,
+      status: row.status,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    };
+  });
+}
+
+export async function dismissAbandoned(context: StoreContext, id: string): Promise<void> {
+  assertPermission(context, 'orders.edit');
+
+  // Guarded on OPEN so dismissing cannot overwrite a row that has since
+  // recovered into a real order.
+  const result = await prisma.abandonedCheckout.updateMany({
+    where: { id, storeId: context.storeId, status: 'OPEN' },
+    data: { status: 'DISMISSED' },
+  });
+  if (result.count === 0) throw new AppError('NOT_FOUND', 'Checkout not found.');
 }

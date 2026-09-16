@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "Alakdah",
-    "tagline": "Commerce operations platform",
+    "tagline": "E-commerce management platform",
     "loading": "Loading…",
     "saving": "Saving…",
     "save": "Save",
@@ -72,7 +72,6 @@
     "to": "To",
     "createdAt": "Created",
     "updatedAt": "Updated",
-    "name": "Name",
     "description": "Description",
     "price": "Price",
     "quantity": "Quantity",
@@ -108,7 +107,8 @@
     "closeMenu": "Close menu",
     "sortBy": "Sort by",
     "newest": "Newest",
-    "oldest": "Oldest"
+    "oldest": "Oldest",
+    "image": "Image"
   },
   "errors": {
     "UNAUTHENTICATED": "Your session expired. Please sign in again.",
@@ -152,9 +152,12 @@
     "invalidNumber": "Enter a valid number",
     "invalidSlug": "Use lowercase letters, numbers and dashes only",
     "passwordTooWeak": "Password must be at least 8 characters",
-    "passwordMismatch": "Passwords do not match",
+    "passwordMismatch": "The two passwords do not match.",
     "endBeforeStart": "End date must be after the start date",
-    "selectAtLeastOne": "Select at least one item"
+    "selectAtLeastOne": "Select at least one item",
+    "invalidPixelId": "That id does not match this provider’s format.",
+    "passwordTooShort": "Use at least 8 characters.",
+    "incorrectPassword": "That is not your current password."
   },
   "auth": {
     "login": "Sign in",
@@ -180,7 +183,8 @@
     "username": "Username",
     "backToMerchantLogin": "Merchant sign-in",
     "loggingIn": "Signing in…",
-    "welcomeBack": "Welcome back"
+    "welcomeBack": "Welcome back",
+    "passwordHint": "Use at least 8 characters."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -294,8 +298,15 @@
       "related": "Related products",
       "seo": "SEO"
     },
-    "status": { "DRAFT": "Draft", "ACTIVE": "Active", "ARCHIVED": "Archived" },
-    "visibility": { "VISIBLE": "Visible", "HIDDEN": "Hidden" },
+    "status": {
+      "DRAFT": "Draft",
+      "ACTIVE": "Active",
+      "ARCHIVED": "Archived"
+    },
+    "visibility": {
+      "VISIBLE": "Visible",
+      "HIDDEN": "Hidden"
+    },
     "media": {
       "title": "Product images",
       "hint": "Drag to reorder. The first image is the primary image.",
@@ -401,7 +412,11 @@
         "simple": "Plain and direct"
       },
       "length": "Length",
-      "lengths": { "short": "Short", "medium": "Medium", "long": "Detailed" },
+      "lengths": {
+        "short": "Short",
+        "medium": "Medium",
+        "long": "Detailed"
+      },
       "instructions": "Additional instructions",
       "generating": "Generating…",
       "regenerate": "Generate another",
@@ -460,8 +475,17 @@
       "DELIVERY_FAILED": "Delivery failed",
       "RETURNED": "Returned"
     },
-    "payment": { "PENDING": "Unpaid", "PAID": "Paid", "REFUNDED": "Refunded", "FAILED": "Failed" },
-    "paymentMethod": { "COD": "Cash on delivery", "BANK_TRANSFER": "Bank transfer", "CARD": "Card" },
+    "payment": {
+      "PENDING": "Unpaid",
+      "PAID": "Paid",
+      "REFUNDED": "Refunded",
+      "FAILED": "Failed"
+    },
+    "paymentMethod": {
+      "COD": "Cash on delivery",
+      "BANK_TRANSFER": "Bank transfer",
+      "CARD": "Card"
+    },
     "shippingState": {
       "NOT_SHIPPED": "Not shipped",
       "READY": "Ready",
@@ -610,7 +634,11 @@
       "minDays": "Min days",
       "maxDays": "Max days"
     },
-    "methodType": { "DELIVERY": "Delivery", "PICKUP": "Store pickup", "EXPRESS": "Express" },
+    "methodType": {
+      "DELIVERY": "Delivery",
+      "PICKUP": "Store pickup",
+      "EXPRESS": "Express"
+    },
     "zones": {
       "title": "Pricing zones",
       "hint": "Each zone sets a different price. A zone with no regions acts as the method's fallback price.",
@@ -762,7 +790,11 @@
         "deliveryType": "Delivery method",
         "notes": "Order notes"
       },
-      "modes": { "REQUIRED": "Required", "OPTIONAL": "Optional", "HIDDEN": "Hidden" },
+      "modes": {
+        "REQUIRED": "Required",
+        "OPTIONAL": "Optional",
+        "HIDDEN": "Hidden"
+      },
       "phoneAlwaysRequired": "Phone is always required for cash on delivery and cannot be hidden.",
       "customFields": "Custom fields",
       "customFieldsHint": "Add extra fields to the checkout form.",
@@ -801,7 +833,11 @@
       "maxOrders": "Maximum repeated orders",
       "windowHours": "Protection window (hours)",
       "action": "Action when exceeded",
-      "actions": { "BLOCK": "Block the order", "FLAG": "Flag for review", "ALLOW": "Allow and log only" },
+      "actions": {
+        "BLOCK": "Block the order",
+        "FLAG": "Flag for review",
+        "ALLOW": "Allow and log only"
+      },
       "ipBlacklist": "IP blacklist",
       "ipHint": "Enforced server-side; blocked addresses cannot create orders.",
       "addIp": "Add address",
@@ -826,7 +862,23 @@
       "createdWarning": "Copy it now — you will not be able to see it again.",
       "empty": "No access tokens"
     },
-    "saved": "Settings saved"
+    "saved": "Settings saved",
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Your own details and password.",
+      "account": "Account",
+      "fullName": "Full name",
+      "avatar": "Profile picture",
+      "emailLocked": "Your email cannot be changed here.",
+      "localeHint": "The language of your dashboard only; it does not affect your store.",
+      "changePassword": "Change password",
+      "changePasswordHint": "Changing it signs you out everywhere, including this device.",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "saved": "Profile saved",
+      "passwordChanged": "Password changed. Sign in again."
+    }
   },
   "storefront": {
     "home": "Home",
@@ -882,7 +934,10 @@
       "default": "We will call you shortly to confirm.",
       "trackOrder": "Track order"
     },
-    "quickContact": { "call": "Call us", "whatsapp": "WhatsApp" }
+    "quickContact": {
+      "call": "Call us",
+      "whatsapp": "WhatsApp"
+    }
   },
   "campaigns": {
     "title": "Campaigns",
@@ -898,7 +953,12 @@
       "products": "Products",
       "appliesToAll": "Apply to all products"
     },
-    "state": { "scheduled": "Scheduled", "running": "Running", "ended": "Ended", "paused": "Paused" },
+    "state": {
+      "scheduled": "Scheduled",
+      "running": "Running",
+      "ended": "Ended",
+      "paused": "Paused"
+    },
     "timezoneNote": "Dates are evaluated server-side in the store timezone ({timezone})."
   },
   "pages": {
@@ -1050,7 +1110,7 @@
     "connected": "Connected",
     "disconnected": "Not connected",
     "error": "Connection error",
-    "lastSync": "Last sync",
+    "lastSync": "Last sync: {when}",
     "neverSynced": "Never synced",
     "sync": "Sync now",
     "syncing": "Syncing…",
@@ -1085,6 +1145,26 @@
         "COMPLETED_WITH_ERRORS": "Completed with errors",
         "FAILED": "Failed"
       }
+    },
+    "statusConnected": "Connected",
+    "statusDisconnected": "Not connected",
+    "statusError": "Needs attention",
+    "proposal": "Proposal",
+    "test": "Test",
+    "testPassed": "Credentials are complete",
+    "testMissingCredentials": "Missing credentials",
+    "startImport": "Import data",
+    "credentialsNote": "Secrets are stored encrypted and cannot be read back after saving.",
+    "noCredentialsNeeded": "This source needs no credentials.",
+    "secretStored": "Currently stored: {mask}",
+    "leaveBlankToKeep": "Leave blank to keep the stored value",
+    "disconnectTitle": "Disconnect integration",
+    "disconnectWarning": "The stored credentials are deleted. You will need to enter them again to reconnect.",
+    "capabilities": {
+      "import_orders": "Import orders",
+      "import_products": "Import products",
+      "export_orders": "Export orders",
+      "sync_status": "Sync status"
     }
   },
   "pixels": {
@@ -1104,10 +1184,27 @@
       "order_created": "Order created",
       "order_confirmed": "Order confirmed",
       "order_shipped": "Order shipped",
-      "order_delivered": "Order delivered"
+      "order_delivered": "Order delivered",
+      "page_view": "Page view",
+      "product_view": "Product view"
     },
     "enabled": "Enabled",
-    "saved": "Pixel settings saved"
+    "saved": "Pixel settings saved",
+    "codWarning": "No order event is mapped to a purchase automatically. With cash on delivery an order is not a confirmed sale until it is delivered and paid — you decide which event counts as a conversion.",
+    "setup": "Set up",
+    "mappedCount": "{count} events mapped",
+    "mappingNote": "Unmapped events are never sent.",
+    "activeLabel": "Enable this pixel",
+    "activeHint": "When enabled, the provider’s script loads on storefront pages.",
+    "serverToken": "Conversions API token",
+    "serverTokenHint": "Stored encrypted on the server; it never reaches the browser.",
+    "tokenStored": "Currently stored: {mask}",
+    "useSuggested": "Suggest",
+    "notSent": "— not sent —",
+    "revenueEventHint": "Revenue event — choose deliberately.",
+    "removed": "Pixel removed",
+    "removeTitle": "Remove pixel",
+    "removeWarning": "No further events will be sent to this provider."
   },
   "staff": {
     "title": "Staff & permissions",
@@ -1236,9 +1333,15 @@
       "address": "Entered address",
       "review": "Reached review"
     },
-    "status": { "OPEN": "Open", "RECOVERED": "Recovered", "DISMISSED": "Dismissed" },
+    "status": {
+      "OPEN": "Open",
+      "RECOVERED": "Recovered",
+      "DISMISSED": "Dismissed"
+    },
     "markDismissed": "Dismiss",
-    "privacyNote": "Only data the customer typed themselves is stored."
+    "privacyNote": "Only data the customer typed themselves is stored.",
+    "call": "Call",
+    "unknownCustomer": "No name given"
   },
   "qr": {
     "title": "QR generator",
@@ -1246,7 +1349,15 @@
     "destination": "Link or text",
     "generate": "Generate",
     "download": "Download PNG",
-    "size": "Size"
+    "size": "Size",
+    "preset": "Preset destination",
+    "custom": "Custom link",
+    "failed": "That text could not be encoded.",
+    "emptyHint": "Enter a link to see the code.",
+    "presets": {
+      "products": "Products page",
+      "track": "Order tracking page"
+    }
   },
   "collections": {
     "title": "Collections",
@@ -1255,7 +1366,12 @@
     "empty": "No collections",
     "emptyDescription": "Create a collection to group related products.",
     "handle": "Handle",
-    "productsCount": "{count} products"
+    "productsCount": "{count} products",
+    "image": "Collection image",
+    "handleHint": "Used in the collection’s storefront URL. Generated for you if left blank.",
+    "deleteTitle": "Delete collection",
+    "deleteWarning": "Only the collection is deleted. The products in it are untouched.",
+    "titleField": "Title"
   },
   "trustBadges": {
     "title": "Trust badges",
@@ -1274,6 +1390,60 @@
       "headphones": "Support",
       "clock": "Speed",
       "check": "Verified"
+    }
+  },
+  "import": {
+    "title": "Import data",
+    "subtitle": "Upload a file, map its columns to platform fields, then review before running.",
+    "step1": "1. File",
+    "step1Hint": "A CSV or TSV file whose first row is the column headers.",
+    "step2": "2. Map columns",
+    "step2Hint": "Choose what each column means. Unmapped columns are ignored.",
+    "step3": "3. Review",
+    "step3Hint": "The first rows of the file as they will be read.",
+    "target": "Data type",
+    "targets": {
+      "products": "Products",
+      "orders": "Orders"
+    },
+    "chooseFile": "Choose a file",
+    "fileTooLarge": "The file is larger than {max} MB.",
+    "rowCount": "{count} rows",
+    "missingRequired": "Required fields are not mapped: {fields}",
+    "ignoreColumn": "— ignore —",
+    "runImport": "Import {count} rows",
+    "emptyTitle": "No file chosen yet",
+    "emptyHint": "Choose a CSV file to see its columns and map them.",
+    "finished": "Import finished.",
+    "history": "Import history",
+    "historyHint": "Recent imports and how they turned out.",
+    "noJobs": "No imports yet",
+    "noJobsHint": "Every import shows up here with its result.",
+    "jobSummary": "{imported} imported · {skipped} skipped · {failed} failed of {total}",
+    "status": {
+      "PENDING": "Pending",
+      "PROCESSING": "Processing",
+      "COMPLETED": "Completed",
+      "COMPLETED_WITH_ERRORS": "Completed with errors",
+      "FAILED": "Failed"
+    },
+    "fields": {
+      "name": "Product name",
+      "sku": "SKU",
+      "price": "Price",
+      "compareAtPrice": "Compare-at price",
+      "stock": "Stock",
+      "category": "Category",
+      "description": "Description",
+      "imageUrl": "Image URL",
+      "customerName": "Customer name",
+      "customerPhone": "Phone",
+      "state": "State",
+      "city": "City",
+      "address": "Address",
+      "productName": "Product name",
+      "quantity": "Quantity",
+      "notes": "Notes"
     }
   }
 }

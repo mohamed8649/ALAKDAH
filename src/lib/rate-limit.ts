@@ -31,6 +31,8 @@ export const RATE_LIMITS = {
   aiGeneration: { limit: 20, windowMs: 60 * 60 * 1000 },
   tokenCreate: { limit: 10, windowMs: 60 * 60 * 1000 },
   upload: { limit: 60, windowMs: 10 * 60 * 1000 },
+  integrationTest: { limit: 20, windowMs: 10 * 60 * 1000 },
+  importJob: { limit: 10, windowMs: 60 * 60 * 1000 },
 } as const satisfies Record<string, RateLimitRule>;
 
 export type RateLimitKey = keyof typeof RATE_LIMITS;

@@ -384,7 +384,8 @@ export function CheckoutSettingsView({
       </TabsContent>
 
       <TabsContent value="contact" className="mt-4">
-        <Card>
+        {/* Anchored so the quick-contact app card can link straight here. */}
+        <Card id="quick-contact" className="scroll-mt-20">
           <CardHeader title={tStorefront('quickContact.call')} />
           <CardBody className="space-y-4">
             <FormError message={settingsAction.error} />

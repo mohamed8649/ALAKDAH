@@ -8,6 +8,7 @@ import { enforceRateLimit, resetRateLimit } from '@/lib/rate-limit';
 import {
   createAgentSession,
   createUserSession,
+  revokeAllUserSessions,
   writeActiveStoreId,
 } from '@/server/auth/session';
 import type { AgentLoginInput } from '@/validators/agent';
@@ -237,4 +238,63 @@ let cachedDummyHash: string | null = null;
 async function dummyHash(): Promise<string> {
   cachedDummyHash ??= await hashPassword('timing-equalisation-placeholder');
   return cachedDummyHash;
+}
+
+// ---------------------------------------------------------------------------
+// Profile
+// ---------------------------------------------------------------------------
+
+export interface ProfileInput {
+  fullName: string;
+  phone: string | null;
+  avatarUrl: string | null;
+  locale: 'ar' | 'en';
+}
+
+export async function updateProfile(userId: string, input: ProfileInput): Promise<void> {
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      fullName: input.fullName,
+      phone: input.phone,
+      avatarUrl: input.avatarUrl,
+      locale: input.locale,
+    },
+  });
+}
+
+/**
+ * Change a password.
+ *
+ * The current password is required even though the caller is already signed
+ * in: a session left open on a shared machine should not be enough to lock the
+ * real owner out. Every other session is revoked afterwards, because the point
+ * of changing a password is usually that someone else may have had it.
+ */
+export async function changePassword(
+  userId: string,
+  input: { currentPassword: string; newPassword: string },
+): Promise<void> {
+  enforceRateLimit('login', `pw:${userId}`);
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { passwordHash: true },
+  });
+  if (!user) throw new AppError('UNAUTHENTICATED', 'Not signed in.');
+
+  const valid = await verifyPassword(input.currentPassword, user.passwordHash);
+  if (!valid) {
+    throw new AppError('VALIDATION_FAILED', 'Incorrect password.', {
+      fieldErrors: { currentPassword: ['validation.incorrectPassword'] },
+    });
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash: await hashPassword(input.newPassword) },
+  });
+
+  await revokeAllUserSessions(userId);
+  resetRateLimit('login', `pw:${userId}`);
 }
