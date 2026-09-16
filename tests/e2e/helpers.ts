@@ -5,6 +5,9 @@ export const MERCHANT = { email: 'demo@alakdah.ly', password: 'demo1234' };
 
 export const STORE_SLUG = 'demo';
 
+/** The call-centre agent created by the same seed. */
+export const AGENT = { username: 'sara', password: 'agent1234' };
+
 /** Where `auth.setup.ts` writes the signed-in cookie jar. */
 export const MERCHANT_STATE = 'tests/e2e/.auth/merchant.json';
 

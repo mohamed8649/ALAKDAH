@@ -47,12 +47,12 @@ export default defineConfig({
     },
     {
       name: 'public',
-      testMatch: /storefront-.*\.spec\.ts/,
+      testMatch: /(storefront-.*|agent-portal)\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 900 } },
     },
     {
       name: 'public-mobile',
-      testMatch: /storefront-.*\.spec\.ts/,
+      testMatch: /(storefront-.*|agent-portal)\.spec\.ts/,
       use: { ...devices['Pixel 5'], viewport: { width: 390, height: 844 } },
     },
     {
