@@ -329,8 +329,8 @@ function ProductThumb({ url, size = 'md' }: { url: string | null; size?: 'md' | 
     );
   }
 
-  // eslint-disable-next-line @next/next/no-img-element -- merchant uploads are arbitrary paths
   return (
+    // eslint-disable-next-line @next/next/no-img-element -- merchant uploads are arbitrary paths
     <img
       src={url}
       alt=""

@@ -367,8 +367,8 @@ function StoreSwitcher({
 
 function StoreAvatar({ store }: { store: ShellStore }) {
   if (store.logoUrl) {
-    // eslint-disable-next-line @next/next/no-img-element -- merchant logos are arbitrary remote URLs
     return (
+      // eslint-disable-next-line @next/next/no-img-element -- merchant logos are arbitrary remote URLs
       <img
         src={store.logoUrl}
         alt=""

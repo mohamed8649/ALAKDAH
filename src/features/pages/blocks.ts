@@ -122,27 +122,54 @@ export const pageDocumentSchema = z.object({
 export type PageBlock = z.infer<typeof blockSchema>;
 export type PageDocument = z.infer<typeof pageDocumentSchema>;
 
+const MAX_BLOCKS = 60;
+
+/**
+ * The envelope, without any claim about props.
+ *
+ * Props are deliberately `unknown` here so that malformed props fall through to
+ * the per-type schema's defaults instead of discarding a block the merchant
+ * placed and can still see in the builder.
+ */
+const blockEnvelopeSchema = z.object({
+  id: z.string().min(1).max(60),
+  type: z.enum(BLOCK_TYPES),
+  props: z.unknown(),
+});
+
 /**
  * Validate and normalise a document.
  *
- * Each block's props are parsed against its own schema, so a block that arrives
- * with unexpected keys is normalised rather than stored verbatim. Blocks whose
- * type is unknown are dropped.
+ * Each block is parsed on its own rather than as part of one document-wide
+ * schema. That distinction matters: parsing the whole array at once means a
+ * single unrecognised block — from a newer build, a hand-edited payload, a
+ * block type we later remove — fails the parse and silently replaces the
+ * merchant's entire page with an empty one. Per-block parsing drops the bad
+ * block and keeps the rest.
+ *
+ * A block's props are parsed against its own schema, so unexpected keys are
+ * stripped rather than stored, and props that are the wrong shape entirely
+ * fall back to that type's defaults instead of taking the block down with them.
  */
 export function normaliseDocument(input: unknown): PageDocument {
-  const parsed = pageDocumentSchema.safeParse(input);
-  if (!parsed.success) return { version: 1, blocks: [] };
+  if (!input || typeof input !== 'object') return { version: 1, blocks: [] };
+
+  const raw = (input as { blocks?: unknown }).blocks;
+  if (!Array.isArray(raw)) return { version: 1, blocks: [] };
 
   const blocks: PageBlock[] = [];
 
-  for (const block of parsed.data.blocks) {
-    const schema = BLOCK_SCHEMAS[block.type];
+  for (const candidate of raw.slice(0, MAX_BLOCKS)) {
+    const parsed = blockEnvelopeSchema.safeParse(candidate);
+    if (!parsed.success) continue;
+
+    const schema = BLOCK_SCHEMAS[parsed.data.type];
     if (!schema) continue;
 
-    const props = schema.safeParse(block.props);
+    const props = schema.safeParse(parsed.data.props);
     blocks.push({
-      id: block.id,
-      type: block.type,
+      id: parsed.data.id,
+      type: parsed.data.type,
       props: (props.success ? props.data : schema.parse({})) as Record<string, unknown>,
     });
   }
