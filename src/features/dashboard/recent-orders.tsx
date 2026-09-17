@@ -10,7 +10,6 @@ import { OrderStatusBadge } from '@/features/orders/status-badge';
 import type { OrderListItem } from '@/server/services/order-service';
 import { useTranslations } from '@/i18n/provider';
 import { RelativeTime } from '@/features/shared/relative-time';
-import { formatRelative } from '@/lib/datetime';
 import { formatMoney } from '@/lib/money';
 import { formatPhone, isolateLtr } from '@/lib/phone';
 

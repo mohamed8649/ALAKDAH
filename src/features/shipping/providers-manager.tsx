@@ -19,7 +19,6 @@ import { FormError } from '@/features/shared/form-error';
 import { useServerAction } from '@/hooks/use-server-action';
 import { useLocale, useTranslations } from '@/i18n/provider';
 import { RelativeTime } from '@/features/shared/relative-time';
-import { formatRelative } from '@/lib/datetime';
 
 interface CredentialField {
   key: 'apiKey' | 'apiSecret' | 'accountId' | 'baseUrl';

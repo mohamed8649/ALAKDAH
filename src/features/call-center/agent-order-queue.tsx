@@ -11,7 +11,6 @@ import { OrderStatusBadge } from '@/features/orders/status-badge';
 import { useUrlFilters } from '@/hooks/use-url-filters';
 import { useTranslations } from '@/i18n/provider';
 import { RelativeTime } from '@/features/shared/relative-time';
-import { formatRelative } from '@/lib/datetime';
 import { formatMoney } from '@/lib/money';
 import { formatPhone, isolateLtr, toTelLink, toWhatsAppLink } from '@/lib/phone';
 import { ORDER_STATUSES, type OrderStatus } from '@/features/orders/state-machine';

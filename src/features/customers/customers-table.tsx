@@ -12,7 +12,6 @@ import { Pagination } from '@/components/data-display/pagination';
 import { useDebouncedFilter, useUrlFilters } from '@/hooks/use-url-filters';
 import { useTranslations } from '@/i18n/provider';
 import { RelativeTime } from '@/features/shared/relative-time';
-import { formatRelative } from '@/lib/datetime';
 import { formatMoney, formatNumber } from '@/lib/money';
 import { formatPhone, isolateLtr } from '@/lib/phone';
 
