@@ -34,23 +34,30 @@ function VisuallyHiddenTable({
   locale: string;
 }) {
   return (
-    <table className="sr-only">
-      <caption>{caption}</caption>
-      <thead>
-        <tr>
-          <th scope="col">{valueLabel}</th>
-          <th scope="col">{caption}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((point) => (
-          <tr key={point.key}>
-            <th scope="row">{point.label}</th>
-            <td>{formatNumber(point.value, locale)}</td>
+    // The `sr-only` class goes on a wrapping div, not on the table itself.
+    // `sr-only` works by pinning the element to 1×1 with overflow hidden, and a
+    // table treats a 1px width as a hint rather than a limit — it expands to its
+    // content regardless, which quietly widened the dashboard by the width of
+    // this invisible table.
+    <div className="sr-only">
+      <table>
+        <caption>{caption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{valueLabel}</th>
+            <th scope="col">{caption}</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.map((point) => (
+            <tr key={point.key}>
+              <th scope="row">{point.label}</th>
+              <td>{formatNumber(point.value, locale)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

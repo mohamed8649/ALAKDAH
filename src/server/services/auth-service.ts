@@ -227,6 +227,12 @@ export async function agentLogin(input: AgentLoginInput): Promise<void> {
     data: { failedLogins: 0, lockedUntil: null, lastLoginAt: new Date() },
   });
 
+  // The rate limit exists to slow down guessing, so a correct password clears
+  // it — exactly as merchant login does. Without this, agents rotating through
+  // a shared terminal exhaust the window with successful sign-ins and are
+  // locked out of their own shift.
+  resetRateLimit('agentLogin', `${identifier}|${username}|${clientIp() ?? 'unknown'}`);
+
   await createAgentSession(agent.id, {
     ip: clientIp() ?? undefined,
     userAgent: clientUserAgent() ?? undefined,
